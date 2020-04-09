@@ -2,27 +2,28 @@ from textblob import TextBlob
 import tweepy
 import statistics
 from configparser import ConfigParser
+from pathlib import Path
+# load from installed module
+# from utils import cfg_loader
+from modules.config_util.config_util import cfg_loader
 
-config = ConfigParser()
-config.read('./private/twitter-api.ini')
-
-cfg = config['TWITTER_KEY']
+cfg = cfg_loader.loadsecrets()['TWITTER_KEY']
 auth = tweepy.OAuthHandler(cfg['consumer_key'], cfg['consumer_secret'])
 auth.access_token = cfg['access_token']
 auth.access_token_secret = cfg['access_secret']
 
 api = tweepy.API(auth)
 
-def evaluate_sentiment(input_text, doLog = False):
+def evaluate_sentiment(input_text, doLog=False):
     sentiment = TextBlob(input_text).sentiment
-    if doLog :
+    if doLog:
         print('Sentiment score for the input text is : ' + str(sentiment))
     return sentiment
 
 
 def analyse_tweets(search_text, sample_size=1):
     sentiment_scores = []
-    for i in range(sample_size):
+    for _ in range(sample_size):
         public_tweets = api.search(search_text, result_type='populator')
         for tweet in public_tweets:
             # print(tweet.text, '\n')
@@ -34,7 +35,8 @@ def analyse_tweets(search_text, sample_size=1):
     final_polarity = statistics.variance(polarity_scores)
     # final_polarity = average(polarity_scores)
     print("Final polarity:", final_polarity)
-    print("Tweets related to: " + search_text + " are mostly " + ('positive' if final_polarity >= 0 else 'negative'))
+    print("Tweets related to: " + search_text + " are mostly " +
+          ('positive' if final_polarity >= 0 else 'negative'))
 
 
 # evaluate_sentiment('President Trump is using a global pandemic as cover to exact political revenge against the Intelligence Community Inspector', True)

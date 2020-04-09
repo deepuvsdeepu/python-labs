@@ -1,4 +1,11 @@
+# editor config
 .idea/
 .vscode/
-private/
+
+# virtual env
 venv/
+
+## module installer artifacts
+**/_pycache__
+**/*.pyc
+**/*.egg-info
